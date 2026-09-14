@@ -1,21 +1,39 @@
 require_relative "question"
+require "sqlite3"
 
-questions = [
-  Question.new("Vad heter huvudstaden i Norge?", "Oslo"),
-  Question.new("Vilket år släpptes Ruby 1.0?", "1996"),
-  Question.new("Vad svarar 5.class?", "Integer"),
-]
+db = SQLite3::Database.open "quiz.db"
 
-score = 0
+class Quiz
+  def initialize(questions)
+    @questions = questions
+    @score = 0
+  end
 
-questions.each do |q|
-  reply = q.ask
-  if q.correct?(reply)
-    puts "Rätt!"
-    score += 1
-  else
-    puts "Fel. Rätt svar: #{q.answer}"
+  def run
+    @questions.each do |q|
+      reply = q.ask
+      unless q.correct?(reply)
+        q.hint 
+        reply = q.ask
+      end
+      if q.correct?(reply)
+        puts "Rätt!"
+        @score += 1
+      else
+        puts "Fel. Rätt svar: #{q.answer}"
+      end
+    end
+    puts "#{@score} av #{@questions.length} rätt."
+    @score = 0
   end
 end
 
-puts "#{score} av #{questions.length} rätt."
+questions = db.execute( "select * from questions" ).map {|row| Question.new(row[0],row[1])}
+
+game = Quiz.new(questions)
+
+loop do
+  puts "Starta spel? (y)"
+  game.run if gets.chomp == "y"
+  return
+end

@@ -1,19 +1,9 @@
 class Question
+  attr_reader :prompt, :answer
   def initialize(prompt, answer)
+    raise ArgumentError, "prompt must not be empty" if prompt.empty?
     @prompt = prompt
-    @answer = answer
-  end
-
-  def prompt
-    @prompt
-  end
-
-  def answer
-    @answer
-  end
-
-  def answer=(new_answer)
-    @answer = new_answer
+    @answer = answer.to_s
   end
 
   def ask
@@ -26,6 +16,10 @@ class Question
   end
 
   def to_s
-    "#{prompt} (#{answer})"
+    "#{prompt}"
+  end
+  
+  def hint
+    puts "Hint: #{@answer[0]}"
   end
 end
