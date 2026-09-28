@@ -1,4 +1,5 @@
 require_relative "question"
+require_relative "multiple_choice"
 require "sqlite3"
 
 db = SQLite3::Database.open "quiz.db"
@@ -10,6 +11,7 @@ class Quiz
   end
 
   def run
+    system("cls")
     @questions.each do |q|
       reply = q.ask
       unless q.correct?(reply)
@@ -17,7 +19,8 @@ class Quiz
         reply = q.ask
       end
       if q.correct?(reply)
-        puts "Rätt!"
+        puts "Rätt!
+        "
         @score += 1
       else
         puts "Fel. Rätt svar: #{q.answer}"
@@ -28,12 +31,18 @@ class Quiz
   end
 end
 
-questions = db.execute( "select * from questions" ).map {|row| Question.new(row[0],row[1])}
+questions = db.execute( "select * from questions" ).map do |row|
+  if row[2] == "mono"
+    Question.new(row[0],row[1]) 
+  elsif row[2] == "poly"
+    MultipleChoice.new(row[0],row[3].split,row[1])
+  end
+end
 
 game = Quiz.new(questions)
 
 loop do
-  puts "Starta spel? (y)"
+  puts "Starta quiz? (y)"
   game.run if gets.chomp == "y"
   return
 end
