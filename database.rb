@@ -14,10 +14,11 @@ question = db.execute('
 )
 
 [
-  ["Vad heter huvudstaden i Norge?", "oslo", "mono", "oslo"],
+  ["Vad heter huvudstaden i Norge?", "oslo", "mono"],
+  ["Hur många bilar i sverige?", "6.12345", "numeric"],
   ["A B eller C?", "A", "poly", "A B C"],
-  ["Vilket år släpptes Ruby 1.0?", "1996", "mono", "1996"],
-  ["Vad svarar 5.class?", "Integer", "mono", "Integer"]
+  ["Vilket år släpptes Ruby 1.0?", "1996", "mono"],
+  ["Vad svarar 5.class?", "Integer", "mono"]
 ].each do |query|
   db.execute "insert into questions (question, answer, type, altern) values ( ?, ?, ?, ? )", query
 end
@@ -25,6 +26,6 @@ end
 p db
 
 db.execute( "select * from questions" ) do |row|
-  p row if row[2] == "mono"
+  p row if row[2] != "poly"
   p row[3].split if row[2] == "poly"
 end

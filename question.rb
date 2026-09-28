@@ -2,6 +2,7 @@ class Question
   attr_reader :prompt, :answer
   def initialize(prompt, answer)
     raise ArgumentError, "prompt must not be empty" if prompt.empty?
+    raise ArgumentError, "answer must not be empty" if answer.empty?
     @prompt = prompt
     @answer = answer.to_s
   end

@@ -1,5 +1,6 @@
 require_relative "question"
 require_relative "multiple_choice"
+require_relative "numeric_question"
 require "sqlite3"
 
 db = SQLite3::Database.open "quiz.db"
@@ -36,6 +37,8 @@ questions = db.execute( "select * from questions" ).map do |row|
     Question.new(row[0],row[1]) 
   elsif row[2] == "poly"
     MultipleChoice.new(row[0],row[3].split,row[1])
+  elsif row[2] == "numeric"
+    NumericQuestion.new(row[0],row[1])
   end
 end
 
