@@ -11,6 +11,7 @@ class NumericQuestion < Question
     def correct?(reply)
         reply.gsub(/,/,'.').to_f.round(2) == answer.round(2)
     end
+    
     def hint
         puts "Hint: #{@answer.to_s[0]}"
     end

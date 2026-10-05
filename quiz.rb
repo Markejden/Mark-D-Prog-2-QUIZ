@@ -1,13 +1,14 @@
-require_relative "question"
-require_relative "multiple_choice"
-require_relative "numeric_question"
+require_relative "questions/question"
+require_relative "questions/multiple_choice"
+require_relative "questions/numeric_question"
+require_relative "questions/self_graded"
+require_relative "questions/fillinblank"
 require "sqlite3"
 
-db = SQLite3::Database.open "quiz.db"
-
 class Quiz
-  def initialize(questions)
-    @questions = questions
+  def initialize
+    @db = SQLite3::Database.open "quiz.db"
+    @questions = []
     @score = 0
   end
 
@@ -15,8 +16,8 @@ class Quiz
     system("cls")
     @questions.each do |q|
       reply = q.ask
-      unless q.correct?(reply)
-        q.hint 
+      unless q.correct?(reply) || (q.respond_to?(:hint) == false)
+        q.hint
         reply = q.ask
       end
       if q.correct?(reply)
@@ -30,22 +31,20 @@ class Quiz
     puts "#{@score} av #{@questions.length} rätt."
     @score = 0
   end
-end
 
-questions = db.execute( "select * from questions" ).map do |row|
-  if row[2] == "mono"
-    Question.new(row[0],row[1]) 
-  elsif row[2] == "poly"
-    MultipleChoice.new(row[0],row[3].split,row[1])
-  elsif row[2] == "numeric"
-    NumericQuestion.new(row[0],row[1])
+  def load_questions
+    @questions = @db.execute( "select * from questions" ).map do |col|
+      if col[2] == "mono"
+        Question.new(col[0],col[1]) 
+      elsif col[2] == "poly"
+        MultipleChoice.new(col[0],col[3].split,col[1])
+      elsif col[2] == "numeric"
+        NumericQuestion.new(col[0],col[1])
+      elsif col[2] == "selfg"
+        SelfGraded.new(col[0],col[1])
+      elsif col[2] == "fillin"
+        FillInBlank.new(col[0],col[1].split)
+      end
+    end
   end
-end
-
-game = Quiz.new(questions)
-
-loop do
-  puts "Starta quiz? (y)"
-  game.run if gets.chomp == "y"
-  return
 end

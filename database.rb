@@ -15,6 +15,8 @@ question = db.execute('
 
 [
   ["Vad heter huvudstaden i Norge?", "oslo", "mono"],
+  ["Ruby skapades av ___", "Matz Yukihiro-Matsumoto", "fillin"],
+  ["Förklara inkapsling med en mening","Objektet bestämmer själv vad som går att nå utifrån.", "selfg"],
   ["Hur många bilar i sverige?", "6.12345", "numeric"],
   ["A B eller C?", "A", "poly", "A B C"],
   ["Vilket år släpptes Ruby 1.0?", "1996", "mono"],
